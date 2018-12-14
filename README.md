@@ -1,0 +1,1 @@
+# trace-metrics-intellij-plugin
