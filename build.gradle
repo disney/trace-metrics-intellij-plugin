@@ -1,0 +1,49 @@
+plugins {
+    id 'org.jetbrains.intellij' version '0.3.12'
+}
+
+group 'trace-metrics'
+version version
+
+apply plugin: 'java'
+apply from: 'release.gradle'
+
+sourceCompatibility = 1.8
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    testCompile group: 'junit', name: 'junit', version: '4.12'
+    compile group: 'org.apache.commons', name: 'commons-lang3', version: '3.1'
+    compile group: 'com.jgoodies', name: 'jgoodies-forms', version: '1.6.0'
+    compile group: 'com.fasterxml.jackson.core', name: 'jackson-databind', version: '2.9.7'
+}
+
+intellij {
+    version = 'LATEST-EAP-SNAPSHOT'
+    updateSinceUntilBuild = false
+}
+
+patchPluginXml {
+    changeNotes """
+        <p>1.0.0</p>
+        <ul>
+            <li>Initial release</li>
+        </ul>
+      """
+}
+
+task('prepare-for-release') {
+    doLast {
+        removeSnapshotFromVersion()
+    }
+}
+
+task('prepare-for-next-development-iteration') {
+    doLast {
+        incrementMinor()
+        addSnapshotToVersion()
+    }
+}

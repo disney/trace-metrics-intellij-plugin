@@ -1,0 +1,65 @@
+<idea-plugin>
+    <id>TraceMetrics</id>
+    <name>Trace Metrics</name>
+    <description><![CDATA[
+        <p>This plugin brings those real-world usage metrics into view of the developers as they work in source code.</p>
+        <p>Functionality:</p>
+        <ul>
+            <li>Loads New Relic transaction counts from a server into a table in the IDE</li>
+            <li>Creates two-way links between named New Relic trace annotations in source and the table</li>
+            <li>Opens a pre-formed New Relic Insights query in a browser window.</li>
+        </ul>
+        <p>Context menu in source code</p>
+        <p>
+            <img src="https://raw.githubusercontent.com/disney/trace-metrics-intellij-plugin/master/example/example-contextmenu.png" alt="example-contextmenu" width="600" />
+        </p>
+        <p>Metrics table with context menu for opening New Relic Insights</p>
+        <p>
+            <img src="https://raw.githubusercontent.com/disney/trace-metrics-intellij-plugin/master/example/example-toolwindow.png" alt="example-toolwindow" width="600" />
+        </p>
+    ]]></description>
+    <version>2.0</version>
+    <vendor email="corp.trace-metrics@disney.com" url="https://github.com/disney/trace-metrics-intellij-plugin">Disney Worldwide Services, Inc.</vendor>
+
+    <change-notes></change-notes>
+
+    <!-- please see http://www.jetbrains.org/intellij/sdk/docs/basics/getting_started/build_number_ranges.html for description -->
+    <idea-version since-build="171"/>
+
+    <application-components>
+        <component>
+            <implementation-class>com.disney.idea.components.ApplicationPreferencesState</implementation-class>
+        </component>
+    </application-components>
+
+    <project-components>
+        <component>
+            <implementation-class>com.disney.idea.components.ProjectPreferencesState</implementation-class>
+        </component>
+        <component>
+            <implementation-class>com.disney.idea.components.TraceDataTable</implementation-class>
+        </component>
+        <component>
+            <implementation-class>com.disney.idea.components.TraceToolbar</implementation-class>
+        </component>
+    </project-components>
+
+    <extensions defaultExtensionNs="com.intellij">
+        <toolWindow id="Trace Metrics" secondary="false" icon="/logo.png" anchor="bottom"
+                    factoryClass="com.disney.idea.TraceToolWindowFactory"/>
+        <projectConfigurable instance="com.disney.idea.components.PluginPreferences" nonDefaultProject="true"/>
+    </extensions>
+
+    <actions>
+        <group>
+            <action id="TraceMetrics.ContextMenuTrace" class="com.disney.idea.actions.ContextMenuTraceAction"
+                    text="Trace Metrics" description="Contextual menu item for the @Trace()"
+                    icon="/logo.png"/>
+            <add-to-group group-id="EditorPopupMenu" anchor="last"/>
+            <separator/>
+        </group>
+
+        <action id="TraceMetrics.Configure" class="com.disney.idea.actions.ConfigureAction" icon="AllIcons.General.ProjectSettings"/>
+        <action id="TraceMetrics.Refresh" class="com.disney.idea.actions.RefreshAction" icon="AllIcons.Actions.Refresh"/>
+    </actions>
+</idea-plugin>

@@ -1,0 +1,54 @@
+import java.util.regex.Pattern
+
+def SNAPSHOT_SUFFIX = "-SNAPSHOT"
+def PROPERTIES_FILE = "gradle.properties"
+def JENKINS_FILE = "Jenkinsfile"
+def VERSION_REGEX = "version=(\\d+)\\.(\\d+)\\.(\\d+)(-SNAPSHOT)?"
+def JENKINS_VERSION_REGEX = "trace-metrics-(\\d+)\\.(\\d+)\\.(\\d+)(-SNAPSHOT)?"
+
+def updateFile(fileName, regex, updateText) {
+    def file = file(fileName)
+    def fileContents = file.getText()
+    def pattern = Pattern.compile(regex)
+    def matcher = pattern.matcher(fileContents)
+    matcher.find()
+    def updatedFileContents = matcher.replaceAll(updateText)
+    file.write(updatedFileContents)
+}
+
+def updateProjectVersion(newVersion) {
+    project.setVersion(newVersion)
+    println("Updated project version to $newVersion")
+}
+
+ext {
+
+    removeSnapshotFromVersion = {
+        if (version != null) {
+            def newVersion = version.minus(SNAPSHOT_SUFFIX)
+            updateFile(PROPERTIES_FILE, VERSION_REGEX, "version=" + newVersion)
+            updateProjectVersion(newVersion)
+        }
+    }
+
+    addSnapshotToVersion = {
+        if (version != null && !version.contains(SNAPSHOT_SUFFIX)) {
+            def newVersion = version.plus(SNAPSHOT_SUFFIX)
+            updateFile(PROPERTIES_FILE, VERSION_REGEX, "version=" + newVersion)
+            updateProjectVersion(newVersion)
+        }
+    }
+
+    incrementMinor = {
+        if (version != null) {
+            def (major, minor, patch) = version.tokenize('.')
+            (major, minor) = [major, minor].collect {
+                it.toInteger()
+            }
+            def newVersion = major + "." + (minor + 1) + "." + patch;
+            updateFile(PROPERTIES_FILE, VERSION_REGEX, "version=" + newVersion)
+            updateFile(JENKINS_FILE, JENKINS_VERSION_REGEX, "trace-metrics-" + newVersion.minus(SNAPSHOT_SUFFIX))
+            updateProjectVersion(newVersion)
+        }
+    }
+}
