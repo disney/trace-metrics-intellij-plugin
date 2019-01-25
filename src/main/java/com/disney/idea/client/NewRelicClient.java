@@ -1,14 +1,5 @@
 package com.disney.idea.client;
 
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
-
-import org.apache.commons.compress.utils.IOUtils;
-import org.apache.http.client.methods.CloseableHttpResponse;
-import org.apache.http.client.methods.HttpGet;
-import org.apache.http.impl.client.CloseableHttpClient;
-import org.apache.http.impl.client.HttpClientBuilder;
-
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
@@ -16,6 +7,15 @@ import java.net.URI;
 import java.net.URLEncoder;
 import java.util.LinkedHashMap;
 import java.util.Map;
+
+import org.apache.http.client.methods.CloseableHttpResponse;
+import org.apache.http.client.methods.HttpGet;
+import org.apache.http.impl.client.CloseableHttpClient;
+import org.apache.http.impl.client.HttpClientBuilder;
+
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.common.annotations.VisibleForTesting;
 
 /**
  * Prepares and performs query to remote New Relic web API server to retrieve
@@ -37,11 +37,20 @@ public class NewRelicClient {
     private final CloseableHttpClient httpClient;
 
     public NewRelicClient(String apiKey, String nrUrl, String appName, int numDays) {
+        this(apiKey, nrUrl, appName, numDays, HttpClientBuilder.create().build());
+    }
+
+    @VisibleForTesting
+    NewRelicClient(String apiKey,
+            String nrUrl,
+            String appName,
+            int numDays,
+            CloseableHttpClient httpClient) {
         this.apiKey = apiKey;
-        this.nrUrl  = nrUrl;
-        this.appName  = appName;
+        this.nrUrl = nrUrl;
+        this.appName = appName;
         this.numDays = numDays;
-        this.httpClient = HttpClientBuilder.create().build();
+        this.httpClient = httpClient;
     }
 
     /**
@@ -51,7 +60,7 @@ public class NewRelicClient {
      */
     public Map<String, Long> query() {
         Map<String, Long> countsByName = new LinkedHashMap<>(120);
-        URI uri = null;
+        URI uri;
         try {
             String traceQuery = String.format(traceQueryTemplate, appName, numDays);
 
@@ -62,14 +71,13 @@ public class NewRelicClient {
         }
         HttpGet httpGet = new HttpGet(uri);
         httpGet.addHeader("X-Query-Key", apiKey);
-        int responseCode = 0;
 
-        CloseableHttpResponse response = null;
-        try {
-            int tries = 0;
-            while (responseCode != 200 && tries < 2) {
-                ++tries;
-                response = httpClient.execute(httpGet);
+        int responseCode = 0;
+        int tries = 0;
+
+        while (responseCode != 200 && tries < 2) {
+            ++tries;
+            try (CloseableHttpResponse response = httpClient.execute(httpGet);) {
                 responseCode = response.getStatusLine().getStatusCode();
                 if (responseCode == 200) {
                     // extract response json
@@ -78,22 +86,17 @@ public class NewRelicClient {
                     JsonNode json = om.readTree(bodyStream);
                     // expect { facets: [ { name: ..., count:...}, ...] }
                     JsonNode facetsNode = json.get("facets");
-                    for (JsonNode element: facetsNode) {
+                    for (JsonNode element : facetsNode) {
                         String metricName = element.get("name").asText();
                         metricName = metricName.replace("WebTransaction/Custom/", "");
                         JsonNode resultsNode = element.get("results").get(0);
                         Long count = resultsNode.get("count").asLong();
                         countsByName.put(metricName, count);
                     }
-                    return countsByName;
                 }
-                // else maybe retry the query
-                return countsByName;
+            } catch (IOException e) {
+                e.printStackTrace();
             }
-        } catch (IOException e) {
-            e.printStackTrace();
-        } finally {
-            IOUtils.closeQuietly(response);
         }
 
         return countsByName;
