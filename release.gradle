@@ -2,9 +2,7 @@ import java.util.regex.Pattern
 
 def SNAPSHOT_SUFFIX = "-SNAPSHOT"
 def PROPERTIES_FILE = "gradle.properties"
-def JENKINS_FILE = "Jenkinsfile"
 def VERSION_REGEX = "version=(\\d+)\\.(\\d+)\\.(\\d+)(-SNAPSHOT)?"
-def JENKINS_VERSION_REGEX = "trace-metrics-(\\d+)\\.(\\d+)\\.(\\d+)(-SNAPSHOT)?"
 
 def updateFile(fileName, regex, updateText) {
     def file = file(fileName)
@@ -47,7 +45,6 @@ ext {
             }
             def newVersion = major + "." + (minor + 1) + "." + patch;
             updateFile(PROPERTIES_FILE, VERSION_REGEX, "version=" + newVersion)
-            updateFile(JENKINS_FILE, JENKINS_VERSION_REGEX, "trace-metrics-" + newVersion.minus(SNAPSHOT_SUFFIX))
             updateProjectVersion(newVersion)
         }
     }
