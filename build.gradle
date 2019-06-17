@@ -19,24 +19,19 @@ dependencies {
     testCompile group: 'org.mockito', name: 'mockito-core', version: '2.23.4'
     compile group: 'org.apache.commons', name: 'commons-lang3', version: '3.1'
     compile group: 'com.jgoodies', name: 'jgoodies-forms', version: '1.6.0'
-    compile group: 'com.fasterxml.jackson.core', name: 'jackson-databind', version: '2.9.8'
+    compile group: 'com.fasterxml.jackson.core', name: 'jackson-databind', version: '2.9.9'
 }
 
 intellij {
-    version = 'LATEST-EAP-SNAPSHOT'
+    version = '2019.1' // when possible, use 'LATEST-EAP-SNAPSHOT'
     updateSinceUntilBuild = false
 }
 
 patchPluginXml {
     changeNotes """
-        <p>1.0.0</p>
         <ul>
-            <li>Initial release</li>
-        </ul>
-        <p>1.1.0</p>
-        <ul>
-            <li>Fix query retry logic</li>
             <li>Upgrade Jackson dependency</li>
+            <li>Build with stable intellij project</li>
         </ul>
       """
 }
