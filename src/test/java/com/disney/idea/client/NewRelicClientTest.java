@@ -23,7 +23,8 @@ public class NewRelicClientTest {
     private final String apiKey = "fakeApiKey";
     private final String nrUrl = "http://fakehost";
     private final String appName = "fakeAppName";
-    private final int numDays = 1;
+    private final String numDays = "1";
+    private final String untilDate = "";
 
     private CloseableHttpClient httpClient;
     private NewRelicClient newRelicClient;
@@ -31,14 +32,14 @@ public class NewRelicClientTest {
     @Before
     public void setup() {
         httpClient = mock(CloseableHttpClient.class);
-        newRelicClient = new NewRelicClient(apiKey, nrUrl, appName, numDays, httpClient);
+        newRelicClient = new NewRelicClient(apiKey, nrUrl, appName, numDays, untilDate, httpClient);
     }
 
     @Test
     public void query_retryOnceAfterException() throws Exception {
         when(httpClient.execute(any(HttpGet.class))).thenThrow(new IOException("Failed"));
 
-        Map<String, Long> result = newRelicClient.query();
+        Map<String, Long> result = newRelicClient.query(null);
 
         assert result.isEmpty();
         verify(httpClient, times(2)).execute(any(HttpGet.class));
@@ -51,7 +52,7 @@ public class NewRelicClientTest {
         when(httpClient.execute(any(HttpGet.class))).thenReturn(response);
         when(response.getStatusLine()).thenReturn(new BasicStatusLine(HttpVersion.HTTP_1_1, 500, null));
 
-        Map<String, Long> result = newRelicClient.query();
+        Map<String, Long> result = newRelicClient.query(null);
 
         assert result.isEmpty();
         verify(httpClient, times(2)).execute(any(HttpGet.class));
@@ -66,7 +67,7 @@ public class NewRelicClientTest {
         when(response.getStatusLine()).thenReturn(new BasicStatusLine(HttpVersion.HTTP_1_1, 200, null));
         when(response.getEntity()).thenReturn(entity);
 
-        Map<String, Long> result = newRelicClient.query();
+        Map<String, Long> result = newRelicClient.query(null);
 
         assert result.get("this") == 5;
         verify(httpClient, times(1)).execute(any(HttpGet.class));

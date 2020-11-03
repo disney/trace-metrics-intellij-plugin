@@ -1,9 +1,7 @@
 package com.disney.idea.components;
 
-import javax.swing.*;
-import javax.swing.table.TableColumnModel;
-import javax.swing.table.TableModel;
-import javax.swing.table.TableRowSorter;
+import static com.disney.idea.utils.Utils.openWebpage;
+
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
@@ -14,21 +12,29 @@ import java.text.DecimalFormat;
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Comparator;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import com.disney.idea.actions.RefreshAction;
+
+import javax.swing.*;
+import javax.swing.table.TableColumnModel;
+import javax.swing.table.TableModel;
+import javax.swing.table.TableRowSorter;
+
 import com.disney.idea.utils.Trace;
 import com.disney.idea.utils.TraceLoader;
 import com.disney.idea.utils.Utils;
-import com.intellij.openapi.editor.*;
+import com.intellij.openapi.editor.CaretModel;
+import com.intellij.openapi.editor.Editor;
+import com.intellij.openapi.editor.LogicalPosition;
+import com.intellij.openapi.editor.ScrollType;
+import com.intellij.openapi.editor.ScrollingModel;
 import com.intellij.openapi.fileEditor.FileEditorManager;
 import com.intellij.openapi.progress.ProgressIndicator;
 import com.intellij.openapi.progress.ProgressManager;
 import com.intellij.openapi.progress.Task;
 import com.intellij.openapi.project.DumbService;
 import com.intellij.openapi.project.Project;
-
-import static com.disney.idea.utils.Utils.openWebpage;
 
 /**
  * Per-project UI component containing and presenting New Relic hit count metrics
@@ -65,18 +71,14 @@ public class TraceDataTable {
         curTable.setComponentPopupMenu(menu);
         handleTableEvents(curTable, project);
 
-        // call new relic and create the curTable
+        // Create the curTable with a list of metrics
         ProgressManager.getInstance().run(new Task.Backgroundable(project, "Trace Metrics") {
             public void run(ProgressIndicator indicator) {
-                indicator.setText("Running New Relic query");
-
-                Map<String, Long> traceCounts = RefreshAction.callNewRelic(project);
-
                 indicator.setText("Analyzing code for trace annotations");
                 indicator.pushState();
 
                 // parse the trace annotations and create the curTable
-                refreshTracesAsync(traceCounts, new TraceLoader(project), curTable, project);
+                refreshTracesAsync(new TraceLoader(project), curTable, project);
             }
         });
         return curTable;
@@ -95,7 +97,7 @@ public class TraceDataTable {
                 int currentRow = table.getSelectedRow();
                 try{
                     int modelRow = table.convertRowIndexToModel(currentRow);
-                    String searchTerm = table.getModel().getValueAt(modelRow, 0).toString();
+                    String searchTerm = table.getModel().getValueAt(modelRow, 1).toString(); // Trace Name
                     openWebpage(Utils.getNewRelicUrl(searchTerm));
                 }catch (UnsupportedEncodingException e1) {
                     e1.printStackTrace();
@@ -125,7 +127,7 @@ public class TraceDataTable {
                     // put the cursor at the beginning of the line
                     Editor editor = FileEditorManager.getInstance(project).getSelectedTextEditor();
                     CaretModel caretModel = editor.getCaretModel();
-                    String lineNumberString = table.getModel().getValueAt(modelRow, 3).toString();
+                    String lineNumberString = table.getModel().getValueAt(modelRow, 3).toString(); // Line Number
                     caretModel.moveToLogicalPosition(new LogicalPosition(Integer.valueOf(lineNumberString) - 1,4));
 
                     // scroll to the line
@@ -160,26 +162,26 @@ public class TraceDataTable {
     /**
      * Merges the trace counts from a New Relic metrics query with the list of named
      * trace points from the project source code to produce a new UI table model for view.
-     * @param traceCounts Map of metric name to metric count from a New Relic query
      * @param traceLoader Provides a list of New Relic trace annotations from the project source
      * @param table       The UI table element to be updated with a new table model
      * @param project     a handle to the current project used for UI timing orchestration
      */
-    private void refreshTracesAsync(Map<String, Long> traceCounts, TraceLoader traceLoader, JTable table, Project project) {
+    private void refreshTracesAsync(TraceLoader traceLoader, JTable table, Project project) {
         DumbService.getInstance(project).runWhenSmart(new Runnable() {
             public void run() {
                 ArrayList<Trace> theTraces = traceLoader.load();
 
                 // Create and set up the table
                 TraceTableModel model = new TraceTableModel(theTraces);
+                Map<String, Long> traceCounts = new HashMap<>();
                 model.addTraceCounts(traceCounts);
                 table.setModel(model);
 
                 // Set up table Sorting
                 TableRowSorter<TableModel> sorter = new TableRowSorter<>(model);
                 List<RowSorter.SortKey> sortKeys = new ArrayList<>();
-                sortKeys.add(new RowSorter.SortKey(0, SortOrder.ASCENDING));
-                sorter.setComparator(1, new Comparator<String>() {
+                sortKeys.add(new RowSorter.SortKey(1, SortOrder.ASCENDING)); // Sort by Trace Name
+                sorter.setComparator(2, new Comparator<String>() { // Num Hits
                     @Override
                     public int compare(String s1, String s2){
                         if(!s1.equals("--") && !s2.equals("--")){
@@ -199,8 +201,7 @@ public class TraceDataTable {
                 table.setRowSorter(sorter);
 
                 TableColumnModel tcm = table.getColumnModel();
-                tcm.removeColumn(tcm.getColumn(3));
-                tcm.removeColumn(tcm.getColumn(2));
+                tcm.removeColumn(tcm.getColumn(3)); // Line Number
             }
         });
     }

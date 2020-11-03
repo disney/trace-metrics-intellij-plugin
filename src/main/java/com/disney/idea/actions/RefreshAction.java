@@ -2,11 +2,12 @@ package com.disney.idea.actions;
 
 import java.util.HashMap;
 import java.util.Map;
+
 import org.apache.commons.lang3.StringUtils;
+
 import com.disney.idea.client.NewRelicClient;
 import com.disney.idea.components.ApplicationPreferencesState;
 import com.disney.idea.components.ProjectPreferencesState;
-import com.disney.idea.components.TraceTableModel;
 import com.disney.idea.utils.Utils;
 import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.AnActionEvent;
@@ -26,7 +27,7 @@ public class RefreshAction extends AnAction {
 
     public RefreshAction() {
         // Set the menu item name.
-        super("Refresh New Relic Query");
+        super("Run or Refresh New Relic Query");
     }
 
     /**
@@ -43,12 +44,10 @@ public class RefreshAction extends AnAction {
                 indicator.setText("Running New Relic query");
 
                 // call new relic
-                Map<String, Long> traceCounts = callNewRelic(project);
+                Map<String, Long> traceCounts = callNewRelic(project, indicator);
 
                 // refresh the table content from the query
-                TraceTableModel model = Utils.getTableModel();
-                model.addTraceCounts(traceCounts);
-                Utils.getTable().setModel(model);
+                Utils.refreshCounts(traceCounts);
             }
         });
     }
@@ -60,16 +59,17 @@ public class RefreshAction extends AnAction {
      * @param project the IntelliJ project for which metrics will be fetched
      * @return a Map of metric name to count for that metric, or an empty Map if any configuration is missing.
      */
-    public static Map<String, Long> callNewRelic(Project project){
+    public static Map<String, Long> callNewRelic(Project project, ProgressIndicator indicator){
         ApplicationPreferencesState applicationPreferences = ApplicationPreferencesState.getInstance();
         ProjectPreferencesState projectPreferences = ProjectPreferencesState.getInstance(project);
         String accountId = applicationPreferences.getNewRelicAccountId();
         String apiKey = applicationPreferences.getNewRelicApiKey();
         String appName = projectPreferences.getNewRelicAppName();
-        Integer numDays = projectPreferences.getNumDaysToQuery();
+        String numDays = projectPreferences.getNumDaysToQuery();
+        String untilDate = projectPreferences.getUntilDateToQuery();
 
-        NewRelicClient client = getClient(accountId, apiKey, appName, numDays);
-        return client == null ? new HashMap<>() : client.query();
+        NewRelicClient client = getClient(accountId, apiKey, appName, numDays, untilDate);
+        return client == null ? new HashMap<>() : client.query(indicator);
     }
 
     /**
@@ -78,13 +78,14 @@ public class RefreshAction extends AnAction {
      * @param apiKey    the New Relic API key for executing programmatic queries
      * @param appName   the name of the application to query in New Relic
      * @param numDays   the number of days back to query
+     * @param untilDate the date to query back from (set to today if blank)
      * @return          a fully configured NewRelicClient ready for running an API query,
      *                  or null if the preferences are invalid such that query will not return any results.
      * */
-    protected static NewRelicClient getClient(String accountId, String apiKey, String appName, Integer numDays) {
-        if (StringUtils.isNotEmpty(apiKey) && StringUtils.isNotEmpty(accountId) && StringUtils.isNotEmpty(appName) && numDays > 0) {
+    protected static NewRelicClient getClient(String accountId, String apiKey, String appName, String numDays, String untilDate) {
+        if (StringUtils.isNotBlank(apiKey) && StringUtils.isNotBlank(accountId) && StringUtils.isNotBlank(appName) && Integer.parseInt(numDays) > 0) {
             String url = NewRelicClient.getApiUrl(accountId);
-            return new NewRelicClient(apiKey, url, appName, numDays);
+            return new NewRelicClient(apiKey, url, appName, numDays, untilDate);
         }
         return null;
     }

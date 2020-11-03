@@ -12,7 +12,7 @@ import com.disney.idea.utils.Trace;
  */
 public class TraceTableModel extends DefaultTableModel {
 
-    static final String[] COLUMN_NAMES = {"Trace Name", "Num Hits", "File Name", "Line Number"};
+    static final String[] COLUMN_NAMES = {"File Name", "Trace Name", "Num Hits", "Code Line Number" /* Hidden */};
     private final List<Trace> traces;
 
     public TraceTableModel(List<Trace> traces) {
@@ -20,9 +20,9 @@ public class TraceTableModel extends DefaultTableModel {
         this.traces = traces;
         for (int i = 0; i < traces.size(); i++) {
             Trace trace = traces.get(i);
-            this.setValueAt(trace.getMetricName(), i, 0);
-            this.setValueAt(trace.getFile().getName(), i, 2);
-            this.setValueAt(trace.getLineNumber(), i, 3);
+            this.setValueAt(trace.getFile().getName(), i, 0); // File Name
+            this.setValueAt(trace.getMetricName(), i, 1); // Trace Name
+            this.setValueAt(trace.getLineNumber(), i, 3); // Line Number
         }
     }
 
@@ -36,7 +36,7 @@ public class TraceTableModel extends DefaultTableModel {
     }
 
     /**
-     * Populate the second column of the data table. If the query failed, the column will be populated with '--'s.
+     * Populate the third column of the data table. If the query failed, the column will be populated with '--'s.
      * @param traceCounts Result from NR query
      */
     public void addTraceCounts(Map<String, Long> traceCounts) {
@@ -47,10 +47,10 @@ public class TraceTableModel extends DefaultTableModel {
             if (queryResultIsEmpty) {
                 traceCountString = "--";
             } else {
-                String traceName = (String) this.getValueAt(i, 0);
+                String traceName = (String) this.getValueAt(i, 1); // Trace Name
                 traceCountString = getFormattedTraceCountString(traceCounts, traceName);
             }
-            this.setValueAt(traceCountString, i, 1);
+            this.setValueAt(traceCountString, i, 2); // Num Hits
         }
     }
 

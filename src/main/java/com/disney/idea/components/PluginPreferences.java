@@ -57,6 +57,7 @@ public class PluginPreferences implements Configurable {
         applicationPreferences.setNewRelicApiKey(preferencesPanel.getNewRelicApiKey());
         projectPreferences.setNewRelicAppName(preferencesPanel.getNewRelicAppName());
         projectPreferences.setNumDaysToQuery(preferencesPanel.getNumDays());
+        projectPreferences.setUntilDateToQuery(preferencesPanel.getUntilDate());
         // Auto refresh after clicking Apply or OK.
         // Plug-ins may fetch an existing RefreshAction from the project or ActionManager but this didn't work.
         new RefreshAction().actionPerformed(new AnActionEvent(null, DataManager.getInstance().getDataContext(),
