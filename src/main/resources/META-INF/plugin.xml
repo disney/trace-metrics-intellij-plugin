@@ -20,6 +20,7 @@
     ]]></description>
     <version>2.0</version>
     <vendor email="corp.trace-metrics@disney.com" url="https://github.com/disney/trace-metrics-intellij-plugin">Disney Worldwide Services, Inc.</vendor>
+    <depends>com.intellij.modules.java</depends>
 
     <change-notes></change-notes>
 
@@ -45,7 +46,7 @@
     </project-components>
 
     <extensions defaultExtensionNs="com.intellij">
-        <toolWindow id="Trace Metrics" secondary="false" icon="/logo.png" anchor="bottom"
+        <toolWindow id="Trace Metrics" secondary="false" icon="/logo13x13.png" anchor="bottom"
                     factoryClass="com.disney.idea.TraceToolWindowFactory"/>
         <projectConfigurable instance="com.disney.idea.components.PluginPreferences" nonDefaultProject="true"/>
     </extensions>
@@ -59,7 +60,7 @@
             <separator/>
         </group>
 
-        <action id="TraceMetrics.Configure" class="com.disney.idea.actions.ConfigureAction" icon="AllIcons.General.ProjectSettings"/>
+        <action id="TraceMetrics.Configure" class="com.disney.idea.actions.ConfigureAction" icon="AllIcons.General.GearPlain"/>
         <action id="TraceMetrics.Refresh" class="com.disney.idea.actions.RefreshAction" icon="AllIcons.Actions.Refresh"/>
     </actions>
 </idea-plugin>

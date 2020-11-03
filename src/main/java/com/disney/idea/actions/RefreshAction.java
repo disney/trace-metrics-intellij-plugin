@@ -61,7 +61,7 @@ public class RefreshAction extends AnAction {
      * @return a Map of metric name to count for that metric, or an empty Map if any configuration is missing.
      */
     public static Map<String, Long> callNewRelic(Project project){
-        ApplicationPreferencesState applicationPreferences = ApplicationPreferencesState.getInstance(project);
+        ApplicationPreferencesState applicationPreferences = ApplicationPreferencesState.getInstance();
         ProjectPreferencesState projectPreferences = ProjectPreferencesState.getInstance(project);
         String accountId = applicationPreferences.getNewRelicAccountId();
         String apiKey = applicationPreferences.getNewRelicApiKey();

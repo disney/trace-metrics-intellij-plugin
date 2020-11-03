@@ -18,7 +18,7 @@ import org.apache.commons.lang3.CharEncoding;
 import com.disney.idea.client.NewRelicClient;
 import com.intellij.ide.DataManager;
 import com.intellij.openapi.actionSystem.DataContext;
-import com.intellij.openapi.actionSystem.DataKeys;
+import com.intellij.openapi.actionSystem.PlatformDataKeys;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.wm.ToolWindowManager;
 import com.intellij.psi.PsiAnnotation;
@@ -51,7 +51,7 @@ public class Utils {
      * @return the IntelliJ project object corresponding to the given DataContext.
      */
     public static Project getProject(DataContext context) {
-        return DataKeys.PROJECT.getData(context);
+        return PlatformDataKeys.PROJECT.getData(context);
     }
 
     /**
@@ -85,7 +85,7 @@ public class Utils {
      * @throws URISyntaxException never (we use a static template and type-checked inputs)
      */
     public static URI getNewRelicUrl(String searchTerm) throws UnsupportedEncodingException, URISyntaxException {
-        ApplicationPreferencesState applicationPreferences = ApplicationPreferencesState.getInstance(getProject());
+        ApplicationPreferencesState applicationPreferences = ApplicationPreferencesState.getInstance();
         String baseUrl = NewRelicClient.getInsightsUrl(applicationPreferences.getNewRelicAccountId());
         ProjectPreferencesState projectPreferences = ProjectPreferencesState.getInstance(getProject());
         String appName = projectPreferences.getNewRelicAppName();
