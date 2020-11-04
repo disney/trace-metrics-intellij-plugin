@@ -13,12 +13,16 @@ import java.io.UnsupportedEncodingException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URLEncoder;
+import java.time.LocalDate;
+import java.util.Map;
+
 import org.apache.commons.lang3.CharEncoding;
+import org.apache.commons.lang3.StringUtils;
 
 import com.disney.idea.client.NewRelicClient;
 import com.intellij.ide.DataManager;
 import com.intellij.openapi.actionSystem.DataContext;
-import com.intellij.openapi.actionSystem.DataKeys;
+import com.intellij.openapi.actionSystem.PlatformDataKeys;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.wm.ToolWindowManager;
 import com.intellij.psi.PsiAnnotation;
@@ -51,7 +55,7 @@ public class Utils {
      * @return the IntelliJ project object corresponding to the given DataContext.
      */
     public static Project getProject(DataContext context) {
-        return DataKeys.PROJECT.getData(context);
+        return PlatformDataKeys.PROJECT.getData(context);
     }
 
     /**
@@ -60,6 +64,9 @@ public class Utils {
      * @return a reference to the JTable holding the metrics view for the project in UI focus
      */
     public static JTable getTable() {
+        if (getProject() == null) {
+            return null;
+        }
         JScrollPane scrollPane = (JScrollPane) ToolWindowManager.getInstance(getProject())
                 .getToolWindow("Trace Metrics").getContentManager().findContent("").getComponent().getComponent(1);
         JViewport viewport = scrollPane.getViewport();
@@ -73,7 +80,15 @@ public class Utils {
      */
     public static TraceTableModel getTableModel() {
         JTable table = getTable();
-        return (TraceTableModel) table.getModel();
+        return table == null ? null : (TraceTableModel) table.getModel();
+    }
+
+    public static void refreshCounts(Map<String, Long> traceCounts) {
+        TraceTableModel model = Utils.getTableModel();
+        if (model != null) {
+            model.addTraceCounts(traceCounts);
+            Utils.getTable().setModel(model);
+        }
     }
 
     /**
@@ -85,13 +100,21 @@ public class Utils {
      * @throws URISyntaxException never (we use a static template and type-checked inputs)
      */
     public static URI getNewRelicUrl(String searchTerm) throws UnsupportedEncodingException, URISyntaxException {
-        ApplicationPreferencesState applicationPreferences = ApplicationPreferencesState.getInstance(getProject());
+        ApplicationPreferencesState applicationPreferences = ApplicationPreferencesState.getInstance();
         String baseUrl = NewRelicClient.getInsightsUrl(applicationPreferences.getNewRelicAccountId());
         ProjectPreferencesState projectPreferences = ProjectPreferencesState.getInstance(getProject());
         String appName = projectPreferences.getNewRelicAppName();
-        Integer numDays = projectPreferences.getNumDaysToQuery();
+        String numDays = projectPreferences.getNumDaysToQuery();
+        String untilDate = projectPreferences.getUntilDateToQuery();
 
-        String browserQuery = String.format("SELECT * from Transaction where appName = '%s' and name = 'WebTransaction/Custom/%s' since %d days ago", appName, searchTerm, numDays);
+        String browserQuery;
+        if (StringUtils.isBlank(untilDate)) {
+            browserQuery = String.format("SELECT * FROM Transaction WHERE appName = '%s' AND name = 'WebTransaction/Custom/%s' SINCE %s days ago", appName, searchTerm, numDays);
+        } else {
+            String startDate = LocalDate.parse(untilDate).minusDays(Integer.parseInt(numDays)).toString();
+            browserQuery = String.format("SELECT * FROM Transaction WHERE appName = '%s' AND name = 'WebTransaction/Custom/%s' SINCE '%s' UNTIL '%s'", appName, searchTerm, startDate, untilDate);
+        }
+
         String queryUrl = baseUrl + URLEncoder.encode(browserQuery, CharEncoding.US_ASCII);
         return new URI(queryUrl);
     }

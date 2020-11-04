@@ -3,10 +3,10 @@ package com.disney.idea.components;
 import com.intellij.credentialStore.CredentialAttributes;
 import com.intellij.credentialStore.Credentials;
 import com.intellij.ide.passwordSafe.PasswordSafe;
+import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.components.PersistentStateComponent;
 import com.intellij.openapi.components.State;
 import com.intellij.openapi.components.Storage;
-import com.intellij.openapi.project.Project;
 
 /**
  * Holds the IntelliJ IDEA preferences at the top level (plugin application) for the Trace Metrics plugin,
@@ -19,8 +19,8 @@ public class ApplicationPreferencesState implements PersistentStateComponent<App
     private static final String PROJECT_NAME = "IntelliJ Trace Metrics Plugin";
     private static final String NR_API_KEY = "API Key";
 
-    public static ApplicationPreferencesState getInstance(Project project){
-        return project.getComponent(ApplicationPreferencesState.class);
+    public static ApplicationPreferencesState getInstance(){
+        return ApplicationManager.getApplication().getComponent(ApplicationPreferencesState.class);
     }
 
     /**
