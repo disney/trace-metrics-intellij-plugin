@@ -66,7 +66,7 @@ public class ContextMenuTraceAction extends AnAction {
                 int index = 0;
                 for (int i = 0 ; i < nRow ; i++) {
                     int modelIdx = table.convertRowIndexToModel(i);
-                    if(model.getValueAt(modelIdx,0).equals(trace.getMetricName())) {
+                    if(model.getValueAt(modelIdx,1).equals(trace.getMetricName())) {
                         index = i;
                     }
                 }

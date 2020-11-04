@@ -1,5 +1,12 @@
 package com.disney.idea.components;
 
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+
+import org.apache.commons.lang3.StringUtils;
+
 import com.intellij.openapi.components.PersistentStateComponent;
 import com.intellij.openapi.components.State;
 import com.intellij.openapi.project.Project;
@@ -12,6 +19,8 @@ import com.intellij.openapi.project.Project;
 @State(name = "ProjectPreferencesState")
 public class ProjectPreferencesState implements PersistentStateComponent<ProjectPreferencesState.State> {
 
+    private static DateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+
     public static ProjectPreferencesState getInstance(Project project) {
         return project.getComponent(ProjectPreferencesState.class);
     }
@@ -22,9 +31,10 @@ public class ProjectPreferencesState implements PersistentStateComponent<Project
      */
     public static class State {
         private String newRelicAppName;
-        private Integer numDaysToQuery;
+        private String numDaysToQuery;
+        private String untilDateToQuery;
 
-        private static final int DEFAULT_NUM_DAYS_TO_QUERY = 1;
+        private static final String DEFAULT_NUM_DAYS_TO_QUERY = "1";
 
         public String getNewRelicAppName() {
             return newRelicAppName == null ? "" : newRelicAppName;
@@ -34,20 +44,48 @@ public class ProjectPreferencesState implements PersistentStateComponent<Project
             this.newRelicAppName = newRelicAppName.trim();
         }
 
-        public Integer getNumDaysToQuery() {
+        public String getNumDaysToQuery() {
             return numDaysToQuery == null ? DEFAULT_NUM_DAYS_TO_QUERY : numDaysToQuery;
         }
 
         public void setNumDaysToQuery(String numDaysToQuery) {
             try {
-                int num = Integer.parseInt(numDaysToQuery);
-                // throw away if it's negative
-                if (num >= 0){
-                    this.numDaysToQuery = num;
+                // Only set if positive or zero
+                if (Integer.parseInt(numDaysToQuery) >= 0){
+                    this.numDaysToQuery = numDaysToQuery;
                 }
             } catch (NumberFormatException e) {
                 // throw away value, it's not a int
             }
+        }
+
+        public String getUntilDateToQuery() {
+            return untilDateToQuery == null ? "" : untilDateToQuery;
+        }
+
+        public void setUntilDateToQuery(String untilDateToQuery) {
+            // Only set if valid date
+            if (isValidDateEntry(untilDateToQuery)) {
+                this.untilDateToQuery = untilDateToQuery.trim();
+            } else {
+                // throw away value, it's not a valid date entry
+            }
+        }
+
+        // A valid date is one that is valid and not in the future
+        private boolean isValidDateEntry(String dateStr) {
+            if (StringUtils.isNotBlank(dateStr) && dateStr != null) {
+                sdf.setLenient(false);
+                try {
+                    Date parseDate = sdf.parse(dateStr);
+                    if (parseDate.after(new Date())) {
+                        return false;
+                    }
+                } catch (ParseException e) {
+                    return false;
+                }
+            }
+            return true;
         }
     }
 
@@ -71,11 +109,20 @@ public class ProjectPreferencesState implements PersistentStateComponent<Project
         myState.setNewRelicAppName(newRelicAppName);
     }
 
-    public Integer getNumDaysToQuery() {
+    public String getNumDaysToQuery() {
         return myState.getNumDaysToQuery();
     }
 
     public void setNumDaysToQuery(String numDaysToQuery) {
         myState.setNumDaysToQuery(numDaysToQuery);
     }
+
+    public String getUntilDateToQuery() {
+        return myState.getUntilDateToQuery();
+    }
+
+    public void setUntilDateToQuery(String untilDateToQuery) {
+        myState.setUntilDateToQuery(untilDateToQuery);
+    }
+
 }

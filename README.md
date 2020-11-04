@@ -37,7 +37,9 @@ Configure your New Relic connection settings. Click on the configuration button 
 
 To run the query at any time, click the refresh button in the tool window. The numbers will update if there is any 
 change. Note, there is a search result limit of 1000. The query will run as a background task and can be cancelled via 
-the IntelliJ progress bar. The number of days to query is configurable and can be set to 0 to disable the request. 
+the IntelliJ progress bar. The number of days to query is configurable and can be set to 0 to disable the request.
+By default the end date of the query is today at the time of the query, so "1 day ago" would equate to the last 24 hours.
+You can choose to set a different end date, in which case the time will based on the end of that date in UTC.  
 
 ##### Open Insights
 
@@ -68,3 +70,30 @@ of the screen which can be expanded for more details.
 
 ##### Testing
 Run `gradle test`. See also [TESTING.md](TESTING.md) for common manual tests. 
+
+
+## Release Notes
+
+### 1.0.0
+
+ * Initial release.
+ 
+### 1.1.0
+
+ * Fix query retry logic.
+ * Updated Jackson.
+ 
+### 1.2.0
+
+ * Build with stable intellij project.
+ 
+### 1.3.0
+
+ * Fixed issues running against IntelliJ 2020.1
+ * Added ability to configure query by date, and to combine multiple queries for date ranges.
+ * Now showing File Name to differentiate when the same Trace Name is used multiple times in code.
+ * Updating progress indicator as multiple calls to New Relic are made.
+ * Updating counts as multiple calls to New Relic are made.
+ * Adjustments to plugin configuration UI.
+ * Fixing issue saving Days to Query configuration.
+ * No longer auto-running New Relic query on load.  Must click refresh to run whatever has been saved in the configuration.
