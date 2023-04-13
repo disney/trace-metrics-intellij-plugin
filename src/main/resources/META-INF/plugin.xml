@@ -25,7 +25,7 @@
     <change-notes></change-notes>
 
     <!-- please see http://www.jetbrains.org/intellij/sdk/docs/basics/getting_started/build_number_ranges.html for description -->
-    <idea-version since-build="171"/>
+    <idea-version since-build="201"/>
 
     <application-components>
         <component>
@@ -46,7 +46,7 @@
     </project-components>
 
     <extensions defaultExtensionNs="com.intellij">
-        <toolWindow id="Trace Metrics" secondary="false" icon="/logo13x13.png" anchor="bottom"
+        <toolWindow id="Trace Metrics" secondary="false" icon="/trace-metrics-plugin-logo13x13.png" anchor="bottom"
                     factoryClass="com.disney.idea.TraceToolWindowFactory"/>
         <projectConfigurable instance="com.disney.idea.components.PluginPreferences" nonDefaultProject="true"/>
     </extensions>
@@ -55,7 +55,7 @@
         <group>
             <action id="TraceMetrics.ContextMenuTrace" class="com.disney.idea.actions.ContextMenuTraceAction"
                     text="Trace Metrics" description="Contextual menu item for the @Trace()"
-                    icon="/logo.png"/>
+                    icon="/trace-metrics-plugin-logo.png"/>
             <add-to-group group-id="EditorPopupMenu" anchor="last"/>
             <separator/>
         </group>
