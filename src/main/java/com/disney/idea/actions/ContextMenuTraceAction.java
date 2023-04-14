@@ -1,7 +1,9 @@
 package com.disney.idea.actions;
 
-import javax.swing.*;
 import java.awt.*;
+
+import javax.swing.*;
+
 import com.disney.idea.components.TraceTableModel;
 import com.disney.idea.utils.Trace;
 import com.disney.idea.utils.Utils;

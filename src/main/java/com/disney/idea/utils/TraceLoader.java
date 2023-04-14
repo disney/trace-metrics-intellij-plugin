@@ -1,5 +1,7 @@
 package com.disney.idea.utils;
 
+import java.util.ArrayList;
+
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.roots.ProjectFileIndex;
 import com.intellij.psi.PsiAnnotation;
@@ -7,8 +9,6 @@ import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiFile;
 import com.intellij.psi.PsiManager;
 import com.intellij.psi.PsiRecursiveElementWalkingVisitor;
-
-import java.util.ArrayList;
 
 /**
  * Gathers references to New Relic trace annotations by inspecting the source

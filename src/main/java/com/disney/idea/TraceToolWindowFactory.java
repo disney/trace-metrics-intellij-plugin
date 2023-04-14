@@ -1,12 +1,9 @@
 package com.disney.idea;
 
+import javax.swing.*;
+
 import com.disney.idea.components.TraceDataTable;
 import com.disney.idea.components.TraceToolbar;
-
-import javax.swing.BorderFactory;
-import javax.swing.JScrollPane;
-import javax.swing.JTable;
-
 import com.intellij.openapi.actionSystem.ActionToolbar;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.SimpleToolWindowPanel;

@@ -1,14 +1,8 @@
 package com.disney.idea.utils;
 
-import com.disney.idea.components.ApplicationPreferencesState;
-import com.disney.idea.components.ProjectPreferencesState;
-import com.disney.idea.components.TraceTableModel;
+import static java.awt.Desktop.isDesktopSupported;
 
-import javax.swing.JScrollPane;
-import javax.swing.JTable;
-import javax.swing.JViewport;
-
-import java.awt.Desktop;
+import java.awt.*;
 import java.io.UnsupportedEncodingException;
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -16,10 +10,15 @@ import java.net.URLEncoder;
 import java.time.LocalDate;
 import java.util.Map;
 
+import javax.swing.*;
+
 import org.apache.commons.lang3.CharEncoding;
 import org.apache.commons.lang3.StringUtils;
 
 import com.disney.idea.client.NewRelicClient;
+import com.disney.idea.components.ApplicationPreferencesState;
+import com.disney.idea.components.ProjectPreferencesState;
+import com.disney.idea.components.TraceTableModel;
 import com.intellij.ide.DataManager;
 import com.intellij.openapi.actionSystem.DataContext;
 import com.intellij.openapi.actionSystem.PlatformDataKeys;
@@ -28,8 +27,6 @@ import com.intellij.openapi.wm.ToolWindowManager;
 import com.intellij.psi.PsiAnnotation;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.util.PsiTreeUtil;
-
-import static java.awt.Desktop.isDesktopSupported;
 
 /**
  * Provides utility and convenience methods related to plugin UI and source navigation.

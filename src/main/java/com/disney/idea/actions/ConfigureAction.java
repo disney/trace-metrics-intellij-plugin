@@ -1,12 +1,11 @@
 package com.disney.idea.actions;
 
+import com.disney.idea.components.PluginPreferences;
 import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.actionSystem.PlatformDataKeys;
 import com.intellij.openapi.options.ShowSettingsUtil;
 import com.intellij.openapi.project.Project;
-
-import com.disney.idea.components.PluginPreferences;
 
 /**
  * Defines the menu action to configure Trace Metrics, which launches the settings dialog.
