@@ -26,7 +26,7 @@ public class TraceLoader {
     }
 
     public ArrayList<Trace> load() {
-        ArrayList<Trace> traces = new ArrayList<Trace>();
+        ArrayList<Trace> traces = new ArrayList<>();
         ProjectFileIndex.SERVICE.getInstance(project).iterateContent(fileInProject -> {
             PsiFile file = PsiManager.getInstance(project).findFile(fileInProject);
             if (file != null && FILE_TYPE_JAVA.equals(file.getFileType().getName())) {

@@ -23,7 +23,7 @@ import com.intellij.psi.util.PsiUtil;
 public class ContextMenuTraceAction extends AnAction {
 
     /**
-     * Plugin framework hook, determines when to add the the item to the context menu
+     * Plugin framework hook, determines when to add the item to the context menu
      * @param e the IntelliJ AnActionEvent instance containing UI context
      */
     @Override
@@ -56,30 +56,27 @@ public class ContextMenuTraceAction extends AnAction {
 
         final ToolWindow toolWindow = ToolWindowManager.getInstance(myProject).getToolWindow("Trace Metrics");
 
-        toolWindow.show(new Runnable() {
-            @Override
-            public void run() {
-                JTable table = Utils.getTable();
+        toolWindow.show(() -> {
+            JTable table = Utils.getTable();
 
-                TraceTableModel model = (TraceTableModel) table.getModel();
-                int nRow = model.getRowCount();
-                int index = 0;
-                for (int i = 0 ; i < nRow ; i++) {
-                    int modelIdx = table.convertRowIndexToModel(i);
-                    if(model.getValueAt(modelIdx,1).equals(trace.getMetricName())) {
-                        index = i;
-                    }
+            TraceTableModel model = (TraceTableModel) table.getModel();
+            int nRow = model.getRowCount();
+            int index = 0;
+            for (int i = 0 ; i < nRow ; i++) {
+                int modelIdx = table.convertRowIndexToModel(i);
+                if(model.getValueAt(modelIdx,1).equals(trace.getMetricName())) {
+                    index = i;
                 }
-
-                table.setRowSelectionInterval(index, index);
-
-                JViewport viewport = (JViewport)table.getParent();
-                Rectangle rect = table.getCellRect(index, 0, true);
-                Point pt = viewport.getViewPosition();
-                rect.setLocation(rect.x-pt.x, rect.y-pt.y);
-
-                table.scrollRectToVisible(rect);
             }
+
+            table.setRowSelectionInterval(index, index);
+
+            JViewport viewport = (JViewport)table.getParent();
+            Rectangle rect = table.getCellRect(index, 0, true);
+            Point pt = viewport.getViewPosition();
+            rect.setLocation(rect.x-pt.x, rect.y-pt.y);
+
+            table.scrollRectToVisible(rect);
         });
     }
 }

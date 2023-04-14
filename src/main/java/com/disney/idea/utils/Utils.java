@@ -166,8 +166,7 @@ public class Utils {
      */
     public static PsiAnnotation getTraceAnnotationParent(PsiElement element) {
         boolean onlySearchImmediateParent = false;
-        PsiAnnotation parent = PsiTreeUtil.getParentOfType(element, PsiAnnotation.class, onlySearchImmediateParent);
-        return parent;
+        return PsiTreeUtil.getParentOfType(element, PsiAnnotation.class, onlySearchImmediateParent);
     }
 
 }

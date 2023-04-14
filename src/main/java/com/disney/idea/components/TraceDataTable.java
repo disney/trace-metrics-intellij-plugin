@@ -2,8 +2,6 @@ package com.disney.idea.components;
 
 import static com.disney.idea.utils.Utils.openWebpage;
 
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.io.UnsupportedEncodingException;
@@ -35,6 +33,7 @@ import com.intellij.openapi.progress.ProgressManager;
 import com.intellij.openapi.progress.Task;
 import com.intellij.openapi.project.DumbService;
 import com.intellij.openapi.project.Project;
+import com.intellij.ui.table.JBTable;
 
 /**
  * Per-project UI component containing and presenting New Relic hit count metrics
@@ -59,13 +58,13 @@ public class TraceDataTable {
     }
 
     private JTable createTable(Project project) {
-        curTable = new JTable();
+        curTable = new JBTable();
         curTable.setFillsViewportHeight(true);
 
         // Set Selection Mode
         curTable.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 
-        // Create the pop up menu
+        // Create the pop-up menu
         JPopupMenu menu = createMenu(curTable);
 
         curTable.setComponentPopupMenu(menu);
@@ -85,25 +84,20 @@ public class TraceDataTable {
     }
 
     private JPopupMenu createMenu(JTable table){
-        // Create the pop up menu
+        // Create the pop-up menu
         JPopupMenu menu = new JPopupMenu();
 
         JMenuItem openBrowser = new JMenuItem("Open in Browser");
 
         // Add Action Listener to the menu Item
-        openBrowser.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                int currentRow = table.getSelectedRow();
-                try{
-                    int modelRow = table.convertRowIndexToModel(currentRow);
-                    String searchTerm = table.getModel().getValueAt(modelRow, 1).toString(); // Trace Name
-                    openWebpage(Utils.getNewRelicUrl(searchTerm));
-                }catch (UnsupportedEncodingException e1) {
-                    e1.printStackTrace();
-                } catch (URISyntaxException e1) {
-                    e1.printStackTrace();
-                }
+        openBrowser.addActionListener(e -> {
+            int currentRow = table.getSelectedRow();
+            try{
+                int modelRow = table.convertRowIndexToModel(currentRow);
+                String searchTerm = table.getModel().getValueAt(modelRow, 1).toString(); // Trace Name
+                openWebpage(Utils.getNewRelicUrl(searchTerm));
+            }catch (UnsupportedEncodingException | URISyntaxException e1) {
+                e1.printStackTrace();
             }
         });
 
@@ -150,7 +144,7 @@ public class TraceDataTable {
      */
     private Long stringToLong(String str){
         DecimalFormat df = new DecimalFormat("#,###");
-        Long num1 = 0L;
+        long num1 = 0L;
         try {
             num1 = df.parse(str).longValue();
         } catch (ParseException e) {
@@ -167,42 +161,37 @@ public class TraceDataTable {
      * @param project     a handle to the current project used for UI timing orchestration
      */
     private void refreshTracesAsync(TraceLoader traceLoader, JTable table, Project project) {
-        DumbService.getInstance(project).runWhenSmart(new Runnable() {
-            public void run() {
-                ArrayList<Trace> theTraces = traceLoader.load();
+        DumbService.getInstance(project).runWhenSmart(() -> {
+            ArrayList<Trace> theTraces = traceLoader.load();
 
-                // Create and set up the table
-                TraceTableModel model = new TraceTableModel(theTraces);
-                Map<String, Long> traceCounts = new HashMap<>();
-                model.addTraceCounts(traceCounts);
-                table.setModel(model);
+            // Create and set up the table
+            TraceTableModel model = new TraceTableModel(theTraces);
+            Map<String, Long> traceCounts = new HashMap<>();
+            model.addTraceCounts(traceCounts);
+            table.setModel(model);
 
-                // Set up table Sorting
-                TableRowSorter<TableModel> sorter = new TableRowSorter<>(model);
-                List<RowSorter.SortKey> sortKeys = new ArrayList<>();
-                sortKeys.add(new RowSorter.SortKey(1, SortOrder.ASCENDING)); // Sort by Trace Name
-                sorter.setComparator(2, new Comparator<String>() { // Num Hits
-                    @Override
-                    public int compare(String s1, String s2){
-                        if(!s1.equals("--") && !s2.equals("--")){
-                            return Long.compare(stringToLong(s1), stringToLong(s2));
-                        }
-                        if(s1.equals("--") && !s2.equals("--")){
-                            return -1;
-                        }
-                        if(!s1.equals("--") && s2.equals("--")){
-                            return 1;
-                        }
-                        return 0;
-                    }
+            // Set up table Sorting
+            TableRowSorter<TableModel> sorter = new TableRowSorter<>(model);
+            List<RowSorter.SortKey> sortKeys = new ArrayList<>();
+            sortKeys.add(new RowSorter.SortKey(1, SortOrder.ASCENDING)); // Sort by Trace Name
+            // Num Hits
+            sorter.setComparator(2, (Comparator<String>) (s1, s2) -> {
+                if(!s1.equals("--") && !s2.equals("--")){
+                    return Long.compare(stringToLong(s1), stringToLong(s2));
+                }
+                if(s1.equals("--") && !s2.equals("--")){
+                    return -1;
+                }
+                if(!s1.equals("--") && s2.equals("--")){
+                    return 1;
+                }
+                return 0;
+            });
+            sorter.setSortKeys(sortKeys);
+            table.setRowSorter(sorter);
 
-                });
-                sorter.setSortKeys(sortKeys);
-                table.setRowSorter(sorter);
-
-                TableColumnModel tcm = table.getColumnModel();
-                tcm.removeColumn(tcm.getColumn(3)); // Line Number
-            }
+            TableColumnModel tcm = table.getColumnModel();
+            tcm.removeColumn(tcm.getColumn(3)); // Line Number
         });
     }
 }

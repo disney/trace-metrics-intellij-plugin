@@ -65,7 +65,7 @@ public class NewRelicClient {
     }
 
     /**
-     * Performs a HTTP query to the configured New Relic NerdGraph API service endpoint, retrieving
+     * Performs an HTTP query to the configured New Relic NerdGraph API service endpoint, retrieving
      * query results in JSON format and transforming them to a map of metric to counts.
      * @return a Map whose keys are metric names and whose values are query result counts.
      */

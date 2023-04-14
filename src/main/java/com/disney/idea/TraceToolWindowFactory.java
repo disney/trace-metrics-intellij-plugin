@@ -13,6 +13,7 @@ import com.intellij.openapi.ui.SimpleToolWindowPanel;
 import com.intellij.openapi.wm.ToolWindow;
 import com.intellij.openapi.wm.ToolWindowFactory;
 import com.intellij.ui.JBColor;
+import com.intellij.ui.components.JBScrollPane;
 import com.intellij.ui.content.Content;
 import com.intellij.ui.content.ContentFactory;
 
@@ -34,17 +35,11 @@ public class TraceToolWindowFactory implements ToolWindowFactory {
 
         // table in scroll pane
         JTable table = TraceDataTable.getInstance(project).getTable();
-        JScrollPane scrollPane = createScrollPane(table);
+        JScrollPane scrollPane = new JBScrollPane(table);
         scrollPane.setBorder(BorderFactory.createMatteBorder(0, 1, 0, 0, JBColor.border()));
 
         myJPanel.add(scrollPane);
         Content tableContent = contentFactory.createContent(myJPanel, "", false);
         toolWindow.getContentManager().addContent(tableContent);
     }
-
-    private JScrollPane createScrollPane(JTable table) {
-        JScrollPane scrollPane = new JScrollPane(table);
-        return scrollPane;
-    }
-
 }

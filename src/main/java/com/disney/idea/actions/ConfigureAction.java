@@ -20,7 +20,7 @@ public class ConfigureAction extends AnAction {
     }
 
     /**
-     * Handles selecting the Configure menu item by opening the settings dialog in the context
+     * Handles selecting the "Configure" menu item by opening the settings dialog in the context
      * of the current IntelliJ project.
      * @param event AnActionEvent instance for selecting Configure, containing project context.
      */

@@ -67,6 +67,9 @@ public class PreferencesPanel extends JPanel {
         untilDateField = new JBTextField(savedUntilDate);
         untilDateField.getDocument().addDocumentListener(getDocumentListener());
 
+        // Reference: https://ptolemy.berkeley.edu/ptolemyII/ptII8.1/ptII/doc/whitepaper.pdf (see "Column and Row Specifications" section)
+        // p = pref
+        // dlu = dialog units
         FormLayout layout = new FormLayout(
                 "10dlu, left:pref, 3dlu, pref:grow, 3dlu, pref", // 6 columns
                 "p, 5dlu, p, 3dlu, p, 3dlu, p, 3dlu, p, 3dlu, p");      // 11 rows
