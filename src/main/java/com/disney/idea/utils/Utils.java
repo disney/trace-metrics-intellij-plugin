@@ -60,11 +60,11 @@ public class Utils {
      * focus, to support handling menu actions.
      * @return a reference to the JTable holding the metrics view for the project in UI focus
      */
-    public static JTable getTable() {
-        if (getProject() == null) {
+    public static JTable getTable(Project project) {
+        if (project == null) {
             return null;
         }
-        JScrollPane scrollPane = (JScrollPane) ToolWindowManager.getInstance(getProject())
+        JScrollPane scrollPane = (JScrollPane) ToolWindowManager.getInstance(project)
                 .getToolWindow("Trace Metrics").getContentManager().findContent("").getComponent().getComponent(1);
         JViewport viewport = scrollPane.getViewport();
         return (JTable) viewport.getView();
@@ -75,16 +75,16 @@ public class Utils {
      * in current UI focus, used for updating the content.
      * @return the runtimeTableModel underlying the metrics display table for the project in UI focus
      */
-    public static TraceTableModel getTableModel() {
-        JTable table = getTable();
+    public static TraceTableModel getTableModel(Project project) {
+        JTable table = getTable(project);
         return table == null ? null : (TraceTableModel) table.getModel();
     }
 
-    public static void refreshCounts(Map<String, Long> traceCounts) {
-        TraceTableModel model = Utils.getTableModel();
+    public static void refreshCounts(Project project, Map<String, Long> traceCounts) {
+        TraceTableModel model = Utils.getTableModel(project);
         if (model != null) {
             model.addTraceCounts(traceCounts);
-            Utils.getTable().setModel(model);
+            Utils.getTable(project).setModel(model);
         }
     }
 

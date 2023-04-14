@@ -47,7 +47,7 @@ public class RefreshAction extends AnAction {
                 Map<String, Long> traceCounts = callNewRelic(project, indicator);
 
                 // refresh the table content from the query
-                Utils.refreshCounts(traceCounts);
+                Utils.refreshCounts(project, traceCounts);
             }
         });
     }

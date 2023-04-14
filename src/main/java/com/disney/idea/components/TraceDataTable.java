@@ -90,14 +90,16 @@ public class TraceDataTable {
         JMenuItem openBrowser = new JMenuItem("Open in Browser");
 
         // Add Action Listener to the menu Item
-        openBrowser.addActionListener(e -> {
+        openBrowser.addActionListener(event -> {
             int currentRow = table.getSelectedRow();
-            try{
+            try {
                 int modelRow = table.convertRowIndexToModel(currentRow);
                 String searchTerm = table.getModel().getValueAt(modelRow, 1).toString(); // Trace Name
                 openWebpage(Utils.getNewRelicUrl(searchTerm));
-            }catch (UnsupportedEncodingException | URISyntaxException e1) {
-                e1.printStackTrace();
+            } catch (ArrayIndexOutOfBoundsException e1) {
+                // Could be thrown if no table is displayed
+            } catch (UnsupportedEncodingException | URISyntaxException e2) {
+                e2.printStackTrace();
             }
         });
 
@@ -108,9 +110,9 @@ public class TraceDataTable {
 
     private void handleTableEvents(JTable table, Project project) {
         table.addMouseListener(new MouseAdapter() {
-            public void mouseClicked(MouseEvent e) {
+            public void mouseClicked(MouseEvent event) {
                 // only perform action if double-clicked
-                if (e.getClickCount() == 2) {
+                if (event.getClickCount() == 2) {
                     TraceTableModel model = (TraceTableModel) table.getModel();
                     // open file in editor
                     int selectedRow = table.getSelectedRow();
@@ -130,10 +132,14 @@ public class TraceDataTable {
                 }
 
                 // If right click
-                else if(SwingUtilities.isRightMouseButton(e) || e.isControlDown()){
+                else if(SwingUtilities.isRightMouseButton(event) || event.isControlDown()){
                     // Highlight the right-clicked row
-                    int row = table.rowAtPoint(e.getPoint() );
-                    table.setRowSelectionInterval(row, row);
+                    int row = table.rowAtPoint(event.getPoint() );
+                    try {
+                        table.setRowSelectionInterval(row, row);
+                    } catch (IllegalArgumentException e) {
+                        // Could be thrown if no table is displayed
+                    }
                 }
             }
         });

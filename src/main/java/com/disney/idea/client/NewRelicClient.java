@@ -118,11 +118,13 @@ public class NewRelicClient {
                     JsonNode json = om.readTree(bodyStream);
                     // expect: {"data":{"actor":{"nrql":{"results":[{"facet":"...","count":...,"name":"..."}, { etc... }]}}}}
                     JsonNode resultsNode = json.get("data").get("actor").get("nrql").get("results");
-                    for (JsonNode element : resultsNode) {
-                        String metricName = element.get("name").asText();
-                        metricName = metricName.replace("WebTransaction/Custom/", "");
-                        Long count = element.get("count").asLong();
-                        countsByName.merge(metricName, count, Long::sum);
+                    if (resultsNode != null) {
+                        for (JsonNode element : resultsNode) {
+                            String metricName = element.get("name").asText();
+                            metricName = metricName.replace("WebTransaction/Custom/", "");
+                            Long count = element.get("count").asLong();
+                            countsByName.merge(metricName, count, Long::sum);
+                        }
                     }
                 }
             } catch (IOException e) {
