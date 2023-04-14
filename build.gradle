@@ -58,7 +58,7 @@ patchPluginXml {
             <li>Fixing issue saving Days to Query configuration.</li>
             <li>No longer auto-running New Relic query on load.  Must click refresh to run whatever has been saved in the configuration.</li>
         </ul>
-        <p>2.0.0</p> 
+        <p>1.4.0</p> 
         <ul>
             <li>Converted to use New Relic NerdGraph API for NRQL queries.</li>
             <li>Updating IDE compatibility to 2020.2.</li>

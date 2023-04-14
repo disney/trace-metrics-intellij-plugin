@@ -98,7 +98,7 @@ Run `gradle test`. See also [TESTING.md](TESTING.md) for common manual tests.
  * Fixing issue saving Days to Query configuration.
  * No longer auto-running New Relic query on load.  Must click refresh to run whatever has been saved in the configuration.
 
-### 2.0.0
+### 1.4.0
 
  * Converted to use New Relic NerdGraph API for NRQL queries.
  * Updating IDE compatibility to 2020.2.
