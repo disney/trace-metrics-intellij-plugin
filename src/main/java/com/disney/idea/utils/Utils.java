@@ -106,10 +106,10 @@ public class Utils {
 
         String browserQuery;
         if (StringUtils.isBlank(untilDate)) {
-            browserQuery = String.format("SELECT * FROM Transaction WHERE appName = '%s' AND name = 'WebTransaction/Custom/%s' SINCE %s days ago", appName, searchTerm, numDays);
+            browserQuery = String.format("SELECT * FROM Transaction WHERE appName = '%s' AND name = 'WebTransaction/Custom/%s' SINCE %s days ago LIMIT 1000", appName, searchTerm, numDays);
         } else {
             String startDate = LocalDate.parse(untilDate).minusDays(Integer.parseInt(numDays)).toString();
-            browserQuery = String.format("SELECT * FROM Transaction WHERE appName = '%s' AND name = 'WebTransaction/Custom/%s' SINCE '%s' UNTIL '%s'", appName, searchTerm, startDate, untilDate);
+            browserQuery = String.format("SELECT * FROM Transaction WHERE appName = '%s' AND name = 'WebTransaction/Custom/%s' SINCE '%s' UNTIL '%s' LIMIT 1000", appName, searchTerm, startDate, untilDate);
         }
 
         String queryUrl = baseUrl + URLEncoder.encode(browserQuery, CharEncoding.US_ASCII);

@@ -64,6 +64,8 @@ patchPluginXml {
             <li>Updating IDE compatibility to 2020.2.</li>
             <li>Updating various dependency versions.</li>
             <li>Renamed logo files to avoid possible conflicts with other plugins.</li>
+            <li>Corrected PluginPreferences constructor.</li>
+            <li>Various other refactorings.</li>
         </ul>
       """
 }
