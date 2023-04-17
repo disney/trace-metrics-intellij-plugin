@@ -49,7 +49,7 @@ To load a query in New Relic Insights, right click on a row in the tool window a
 
 ## Compatibility
 
-Compatible with IntelliJ CE and IntelliJ Ultimate versions 2017.1 and later. 
+Compatible with IntelliJ CE and IntelliJ Ultimate versions 2020.2 and later. 
 
 ## Support
 
@@ -97,3 +97,13 @@ Run `gradle test`. See also [TESTING.md](TESTING.md) for common manual tests.
  * Adjustments to plugin configuration UI.
  * Fixing issue saving Days to Query configuration.
  * No longer auto-running New Relic query on load.  Must click refresh to run whatever has been saved in the configuration.
+
+### 1.4.0
+
+ * Converted to use New Relic NerdGraph API for NRQL queries.
+ * Updating IDE compatibility to 2020.2.
+ * Updating various dependency versions.
+ * Renamed logo files to avoid possible conflicts with other plugins.
+ * Corrected PluginPreferences constructor.
+ * Various other refactorings.
+

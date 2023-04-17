@@ -1,9 +1,10 @@
 package com.disney.idea.components;
 
-import javax.swing.table.DefaultTableModel;
 import java.text.DecimalFormat;
 import java.util.List;
 import java.util.Map;
+
+import javax.swing.table.DefaultTableModel;
 
 import com.disney.idea.utils.Trace;
 

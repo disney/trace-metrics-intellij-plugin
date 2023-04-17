@@ -19,16 +19,16 @@ repositories {
 }
 
 dependencies {
-    testCompile group: 'junit', name: 'junit', version: '4.13.1'
-    testCompile group: 'org.mockito', name: 'mockito-core', version: '2.23.4'
-    compile group: 'org.apache.commons', name: 'commons-lang3', version: '3.11'
+    testCompile group: 'junit', name: 'junit', version: '4.13.2'
+    testCompile group: 'org.mockito', name: 'mockito-core', version: '4.11.0'
+    compile group: 'org.apache.commons', name: 'commons-lang3', version: '3.12.0'
     compile group: 'com.jgoodies', name: 'jgoodies-forms', version: '1.9.0'
-    compile group: 'com.fasterxml.jackson.core', name: 'jackson-databind', version: '2.11.3'
+    compile group: 'com.fasterxml.jackson.core', name: 'jackson-databind', version: '2.14.2'
 }
 
 intellij {
     plugins 'java'
-    version = '2020.1' // when possible, use 'LATEST-EAP-SNAPSHOT'
+    version = '2020.2' // when possible, use 'LATEST-EAP-SNAPSHOT'
     updateSinceUntilBuild = false
 }
 
@@ -57,6 +57,15 @@ patchPluginXml {
             <li>Adjustments to plugin configuration UI.</li>
             <li>Fixing issue saving Days to Query configuration.</li>
             <li>No longer auto-running New Relic query on load.  Must click refresh to run whatever has been saved in the configuration.</li>
+        </ul>
+        <p>1.4.0</p> 
+        <ul>
+            <li>Converted to use New Relic NerdGraph API for NRQL queries.</li>
+            <li>Updating IDE compatibility to 2020.2.</li>
+            <li>Updating various dependency versions.</li>
+            <li>Renamed logo files to avoid possible conflicts with other plugins.</li>
+            <li>Corrected PluginPreferences constructor.</li>
+            <li>Various other refactorings.</li>
         </ul>
       """
 }

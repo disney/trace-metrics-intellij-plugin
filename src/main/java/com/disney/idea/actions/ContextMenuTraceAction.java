@@ -1,7 +1,9 @@
 package com.disney.idea.actions;
 
-import javax.swing.*;
 import java.awt.*;
+
+import javax.swing.*;
+
 import com.disney.idea.components.TraceTableModel;
 import com.disney.idea.utils.Trace;
 import com.disney.idea.utils.Utils;
@@ -23,16 +25,18 @@ import com.intellij.psi.util.PsiUtil;
 public class ContextMenuTraceAction extends AnAction {
 
     /**
-     * Plugin framework hook, determines when to add the the item to the context menu
+     * Plugin framework hook, determines when to add the item to the context menu
      * @param e the IntelliJ AnActionEvent instance containing UI context
      */
     @Override
     public void update(AnActionEvent e) {
-        PsiElement element = PsiUtil.getElementAtOffset(
-                e.getData(CommonDataKeys.PSI_FILE),
-                e.getData(CommonDataKeys.CARET).getOffset());
-        boolean isTraceElement = Utils.isPartOfTraceElement(element);
-        e.getPresentation().setVisible(isTraceElement);
+        if (e.getData(CommonDataKeys.PSI_FILE) != null) {
+            PsiElement element = PsiUtil.getElementAtOffset(
+                    e.getData(CommonDataKeys.PSI_FILE),
+                    e.getData(CommonDataKeys.CARET).getOffset());
+            boolean isTraceElement = Utils.isPartOfTraceElement(element);
+            e.getPresentation().setVisible(isTraceElement);
+        }
     }
 
     /**
@@ -45,41 +49,40 @@ public class ContextMenuTraceAction extends AnAction {
      */
     @Override
     public void actionPerformed(final AnActionEvent e) {
-        PsiElement element = PsiUtil.getElementAtOffset(
-                e.getData(CommonDataKeys.PSI_FILE),
-                e.getData(CommonDataKeys.CARET).getOffset());
+        if (e.getData(CommonDataKeys.PSI_FILE) != null) {
+            PsiElement element = PsiUtil.getElementAtOffset(
+                    e.getData(CommonDataKeys.PSI_FILE),
+                    e.getData(CommonDataKeys.CARET).getOffset());
 
-        PsiAnnotation annotation = Utils.getTraceAnnotationParent(element);
-        Trace trace = Trace.fromPsiAnnotation(annotation);
+            PsiAnnotation annotation = Utils.getTraceAnnotationParent(element);
+            Trace trace = Trace.fromPsiAnnotation(annotation);
 
-        Project myProject = Utils.getProject(e.getDataContext());
+            Project myProject = Utils.getProject(e.getDataContext());
 
-        final ToolWindow toolWindow = ToolWindowManager.getInstance(myProject).getToolWindow("Trace Metrics");
+            final ToolWindow toolWindow = ToolWindowManager.getInstance(myProject).getToolWindow("Trace Metrics");
 
-        toolWindow.show(new Runnable() {
-            @Override
-            public void run() {
-                JTable table = Utils.getTable();
+            toolWindow.show(() -> {
+                JTable table = Utils.getTable(myProject);
 
                 TraceTableModel model = (TraceTableModel) table.getModel();
                 int nRow = model.getRowCount();
                 int index = 0;
-                for (int i = 0 ; i < nRow ; i++) {
+                for (int i = 0; i < nRow; i++) {
                     int modelIdx = table.convertRowIndexToModel(i);
-                    if(model.getValueAt(modelIdx,1).equals(trace.getMetricName())) {
+                    if (model.getValueAt(modelIdx, 1).equals(trace.getMetricName())) {
                         index = i;
                     }
                 }
 
                 table.setRowSelectionInterval(index, index);
 
-                JViewport viewport = (JViewport)table.getParent();
+                JViewport viewport = (JViewport) table.getParent();
                 Rectangle rect = table.getCellRect(index, 0, true);
                 Point pt = viewport.getViewPosition();
-                rect.setLocation(rect.x-pt.x, rect.y-pt.y);
+                rect.setLocation(rect.x - pt.x, rect.y - pt.y);
 
                 table.scrollRectToVisible(rect);
-            }
-        });
+            });
+        }
     }
 }

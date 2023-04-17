@@ -1,6 +1,6 @@
 package com.disney.idea.components;
 
-import javax.swing.SwingConstants;
+import javax.swing.*;
 
 import com.intellij.openapi.actionSystem.ActionManager;
 import com.intellij.openapi.actionSystem.ActionPlaces;

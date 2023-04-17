@@ -13,7 +13,7 @@ import com.intellij.openapi.components.Storage;
  * using IntelliJ's built-in persistence mechanisms, including PasswordSafe for the New Relic API key.
  * Referenced by fully qualified classname in plugin.xml which defines the plugin classes.
  */
-@State(name = "ApplicationPreferencesState", storages = { @Storage(file = "$APP_CONFIG$/configProvider.xml") })
+@State(name = "ApplicationPreferencesState", storages = { @Storage("$APP_CONFIG$/configProvider.xml") })
 public class ApplicationPreferencesState implements PersistentStateComponent<ApplicationPreferencesState.State> {
 
     private static final String PROJECT_NAME = "IntelliJ Trace Metrics Plugin";
@@ -63,7 +63,7 @@ public class ApplicationPreferencesState implements PersistentStateComponent<App
 
     /**
      * Updates the value of the New Relic account ID in the persistent preference store.
-     * @param newRelicAccountId
+     * @param newRelicAccountId The New Relic account ID
      */
     public void setNewRelicAccountId(String newRelicAccountId) {
         myState.setNewRelicAccountId(newRelicAccountId.trim());
