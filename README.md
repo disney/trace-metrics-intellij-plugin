@@ -49,7 +49,7 @@ To load a query in New Relic Insights, right click on a row in the tool window a
 
 ## Compatibility
 
-Compatible with IntelliJ CE and IntelliJ Ultimate versions 2017.1 and later. 
+Compatible with IntelliJ CE and IntelliJ Ultimate versions 2020.2 and later. 
 
 ## Support
 
@@ -74,26 +74,35 @@ Run `gradle test`. See also [TESTING.md](TESTING.md) for common manual tests.
 
 ## Release Notes
 
-### 1.0.0
+### 1.4.0
 
- * Initial release.
- 
-### 1.1.0
+* Converted to use New Relic NerdGraph API for NRQL queries.
+* Updating IDE compatibility to 2020.2.
+* Updating various dependency versions.
+* Renamed logo files to avoid possible conflicts with other plugins.
+* Corrected PluginPreferences constructor.
+* Various other refactorings.
 
- * Fix query retry logic.
- * Updated Jackson.
- 
-### 1.2.0
-
- * Build with stable intellij project.
- 
 ### 1.3.0
 
- * Fixed issues running against IntelliJ 2020.1
- * Added ability to configure query by date, and to combine multiple queries for date ranges.
- * Now showing File Name to differentiate when the same Trace Name is used multiple times in code.
- * Updating progress indicator as multiple calls to New Relic are made.
- * Updating counts as multiple calls to New Relic are made.
- * Adjustments to plugin configuration UI.
- * Fixing issue saving Days to Query configuration.
- * No longer auto-running New Relic query on load.  Must click refresh to run whatever has been saved in the configuration.
+* Fixed issues running against IntelliJ 2020.1
+* Added ability to configure query by date, and to combine multiple queries for date ranges.
+* Now showing File Name to differentiate when the same Trace Name is used multiple times in code.
+* Updating progress indicator as multiple calls to New Relic are made.
+* Updating counts as multiple calls to New Relic are made.
+* Adjustments to plugin configuration UI.
+* Fixing issue saving Days to Query configuration.
+* No longer auto-running New Relic query on load.  Must click refresh to run whatever has been saved in the configuration.
+
+### 1.2.0
+
+* Build with stable intellij project.
+
+### 1.1.0
+
+* Fix query retry logic.
+* Updated Jackson.
+
+### 1.0.0
+
+* Initial release.

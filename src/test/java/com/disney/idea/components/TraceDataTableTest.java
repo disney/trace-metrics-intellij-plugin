@@ -1,9 +1,6 @@
 package com.disney.idea.components;
 
-import javax.swing.JMenuItem;
-import javax.swing.JPopupMenu;
-import javax.swing.JTable;
-import javax.swing.ListSelectionModel;
+import javax.swing.*;
 
 import org.junit.Assert;
 

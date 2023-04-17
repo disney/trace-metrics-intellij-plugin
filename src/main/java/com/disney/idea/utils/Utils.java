@@ -1,14 +1,8 @@
 package com.disney.idea.utils;
 
-import com.disney.idea.components.ApplicationPreferencesState;
-import com.disney.idea.components.ProjectPreferencesState;
-import com.disney.idea.components.TraceTableModel;
+import static java.awt.Desktop.isDesktopSupported;
 
-import javax.swing.JScrollPane;
-import javax.swing.JTable;
-import javax.swing.JViewport;
-
-import java.awt.Desktop;
+import java.awt.*;
 import java.io.UnsupportedEncodingException;
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -16,10 +10,15 @@ import java.net.URLEncoder;
 import java.time.LocalDate;
 import java.util.Map;
 
+import javax.swing.*;
+
 import org.apache.commons.lang3.CharEncoding;
 import org.apache.commons.lang3.StringUtils;
 
 import com.disney.idea.client.NewRelicClient;
+import com.disney.idea.components.ApplicationPreferencesState;
+import com.disney.idea.components.ProjectPreferencesState;
+import com.disney.idea.components.TraceTableModel;
 import com.intellij.ide.DataManager;
 import com.intellij.openapi.actionSystem.DataContext;
 import com.intellij.openapi.actionSystem.PlatformDataKeys;
@@ -28,8 +27,6 @@ import com.intellij.openapi.wm.ToolWindowManager;
 import com.intellij.psi.PsiAnnotation;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.util.PsiTreeUtil;
-
-import static java.awt.Desktop.isDesktopSupported;
 
 /**
  * Provides utility and convenience methods related to plugin UI and source navigation.
@@ -63,11 +60,11 @@ public class Utils {
      * focus, to support handling menu actions.
      * @return a reference to the JTable holding the metrics view for the project in UI focus
      */
-    public static JTable getTable() {
-        if (getProject() == null) {
+    public static JTable getTable(Project project) {
+        if (project == null) {
             return null;
         }
-        JScrollPane scrollPane = (JScrollPane) ToolWindowManager.getInstance(getProject())
+        JScrollPane scrollPane = (JScrollPane) ToolWindowManager.getInstance(project)
                 .getToolWindow("Trace Metrics").getContentManager().findContent("").getComponent().getComponent(1);
         JViewport viewport = scrollPane.getViewport();
         return (JTable) viewport.getView();
@@ -78,16 +75,16 @@ public class Utils {
      * in current UI focus, used for updating the content.
      * @return the runtimeTableModel underlying the metrics display table for the project in UI focus
      */
-    public static TraceTableModel getTableModel() {
-        JTable table = getTable();
+    public static TraceTableModel getTableModel(Project project) {
+        JTable table = getTable(project);
         return table == null ? null : (TraceTableModel) table.getModel();
     }
 
-    public static void refreshCounts(Map<String, Long> traceCounts) {
-        TraceTableModel model = Utils.getTableModel();
+    public static void refreshCounts(Project project, Map<String, Long> traceCounts) {
+        TraceTableModel model = Utils.getTableModel(project);
         if (model != null) {
             model.addTraceCounts(traceCounts);
-            Utils.getTable().setModel(model);
+            Utils.getTable(project).setModel(model);
         }
     }
 
@@ -109,10 +106,10 @@ public class Utils {
 
         String browserQuery;
         if (StringUtils.isBlank(untilDate)) {
-            browserQuery = String.format("SELECT * FROM Transaction WHERE appName = '%s' AND name = 'WebTransaction/Custom/%s' SINCE %s days ago", appName, searchTerm, numDays);
+            browserQuery = String.format("SELECT * FROM Transaction WHERE appName = '%s' AND name = 'WebTransaction/Custom/%s' SINCE %s days ago LIMIT 1000", appName, searchTerm, numDays);
         } else {
             String startDate = LocalDate.parse(untilDate).minusDays(Integer.parseInt(numDays)).toString();
-            browserQuery = String.format("SELECT * FROM Transaction WHERE appName = '%s' AND name = 'WebTransaction/Custom/%s' SINCE '%s' UNTIL '%s'", appName, searchTerm, startDate, untilDate);
+            browserQuery = String.format("SELECT * FROM Transaction WHERE appName = '%s' AND name = 'WebTransaction/Custom/%s' SINCE '%s' UNTIL '%s' LIMIT 1000", appName, searchTerm, startDate, untilDate);
         }
 
         String queryUrl = baseUrl + URLEncoder.encode(browserQuery, CharEncoding.US_ASCII);
@@ -166,8 +163,7 @@ public class Utils {
      */
     public static PsiAnnotation getTraceAnnotationParent(PsiElement element) {
         boolean onlySearchImmediateParent = false;
-        PsiAnnotation parent = PsiTreeUtil.getParentOfType(element, PsiAnnotation.class, onlySearchImmediateParent);
-        return parent;
+        return PsiTreeUtil.getParentOfType(element, PsiAnnotation.class, onlySearchImmediateParent);
     }
 
 }

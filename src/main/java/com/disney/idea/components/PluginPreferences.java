@@ -1,6 +1,6 @@
 package com.disney.idea.components;
 
-import javax.swing.JComponent;
+import javax.swing.*;
 
 import com.disney.idea.actions.RefreshAction;
 import com.intellij.ide.DataManager;
@@ -19,14 +19,12 @@ import com.intellij.openapi.project.Project;
 public class PluginPreferences implements Configurable {
 
     private PreferencesPanel preferencesPanel;
-    private Project myProject;
     private ApplicationPreferencesState applicationPreferences;
     private ProjectPreferencesState projectPreferences;
 
-    public PluginPreferences(Project project, ApplicationPreferencesState appPrefs, ProjectPreferencesState projPrefs) {
-        myProject = project;
-        applicationPreferences = appPrefs;
-        projectPreferences = projPrefs;
+    public PluginPreferences(Project project) {
+        applicationPreferences = ApplicationPreferencesState.getInstance();
+        projectPreferences = ProjectPreferencesState.getInstance(project);
     }
 
     @Override

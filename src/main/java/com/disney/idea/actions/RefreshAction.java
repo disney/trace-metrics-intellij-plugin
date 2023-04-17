@@ -47,7 +47,7 @@ public class RefreshAction extends AnAction {
                 Map<String, Long> traceCounts = callNewRelic(project, indicator);
 
                 // refresh the table content from the query
-                Utils.refreshCounts(traceCounts);
+                Utils.refreshCounts(project, traceCounts);
             }
         });
     }
@@ -83,9 +83,8 @@ public class RefreshAction extends AnAction {
      *                  or null if the preferences are invalid such that query will not return any results.
      * */
     protected static NewRelicClient getClient(String accountId, String apiKey, String appName, String numDays, String untilDate) {
-        if (StringUtils.isNotBlank(apiKey) && StringUtils.isNotBlank(accountId) && StringUtils.isNotBlank(appName) && Integer.parseInt(numDays) > 0) {
-            String url = NewRelicClient.getApiUrl(accountId);
-            return new NewRelicClient(apiKey, url, appName, numDays, untilDate);
+        if (StringUtils.isNotBlank(accountId) && StringUtils.isNotBlank(apiKey) && StringUtils.isNotBlank(appName) && Integer.parseInt(numDays) > 0) {
+            return new NewRelicClient(accountId, apiKey, appName, numDays, untilDate);
         }
         return null;
     }

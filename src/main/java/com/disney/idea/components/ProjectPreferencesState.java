@@ -55,7 +55,7 @@ public class ProjectPreferencesState implements PersistentStateComponent<Project
                     this.numDaysToQuery = numDaysToQuery;
                 }
             } catch (NumberFormatException e) {
-                // throw away value, it's not a int
+                // throw away value, it's not an int
             }
         }
 
